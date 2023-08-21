@@ -1,0 +1,36 @@
+IO.puts("Juego de Piedra, Papel y Tijeras!!")
+
+#Jugador uno, selecciona su valor para jugar
+jugador1 = String.trim(IO.gets("Eres el Jugador uno. Ingresa Piedra, Papel o Tijera ... "))
+
+#Jugador dos, selecciona su valor para jugar
+IO.puts("Jugador dos escogiendo su resultado... ")
+list =["Piedra", "Papel","Tijera"]
+list = Enum.take_random(list,1)
+jugador2 = Enum.fetch!(list,0)
+
+#Muestra los valores seleccionados por los jugadores
+IO.puts("Jugador uno seleccionó #{jugador1} ")
+IO.puts("Jugador dos seleccionó #{jugador2} ")
+
+if String.equivalent?(jugador1,"Piedra") and String.equivalent?(jugador2,"Papel") do
+   IO.puts "Gana el Jugador dos con Papel"
+end
+if String.equivalent?(jugador1,"Piedra") and String.equivalent?(jugador2,"Tijera") do
+   IO.puts "Gana el Jugador uno con Piedra "
+end 
+if String.equivalent?(jugador1,"Papel") and String.equivalent?(jugador2,"Piedra") do
+   IO.puts "Gana el Jugador uno con Papel "
+end 
+if String.equivalent?(jugador1,"Papel") and String.equivalent?(jugador2,"Tijera") do
+   IO.puts "Gana el Jugador dos con Tijera "
+end 
+if String.equivalent?(jugador1,"Tijera") and String.equivalent?(jugador2,"Piedra") do
+   IO.puts "Gana el Jugador dos con Piedra "
+end 
+if String.equivalent?(jugador1,"Tijera") and String.equivalent?(jugador2,"Papel") do
+   IO.puts "Gana el Jugador uno con Tijera "
+end
+if String.equivalent?(jugador1,jugador2) do
+   IO.puts"Empate "
+end
