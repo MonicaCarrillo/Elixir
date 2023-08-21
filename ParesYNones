@@ -1,0 +1,39 @@
+IO.puts("Juego de Pares y Nones!!")
+
+#Jugador uno, selecciona su valor para jugar
+jugador1 = String.trim(IO.gets("Eres el Jugador uno. Elige entre Pares y Nones..."))
+
+#Jugador dos, selecciona su valor para jugar
+IO.puts("Jugador dos escogiendo su resultado... ")
+list = ["Pares", "Nones"]
+list = Enum.take_random(list,1)
+jugador2 = Enum.fetch!(list,0)
+
+#Muestra los valores seleccionados por los jugadores
+IO.puts("Jugador uno seleccionó #{jugador1} ")
+IO.puts("Jugador dos seleccionó #{jugador2} ")
+
+j1 = IO.gets("Ingresa un numero entre 1 y 10...")
+j1 = String.replace(j1, "\n" ,"")
+j1 = String.to_integer(j1)
+j2 = Enum.random(1..10)
+
+#Muestra los valores seleccionados por los jugadores
+IO.puts("Jugador uno eligió el número #{j1} ")
+IO.puts("Jugador dos eligió el número #{j2} ")
+dedos = j1 + j2
+IO.puts("La suma de los dedos es  #{dedos} ")
+
+#Opera el modulo 
+modulo = Integer.mod(dedos, 2)
+IO.puts("El resultado es:  #{modulo} ")
+
+if String.equivalent?(jugador1,jugador2) do
+   IO.puts"Los jugadores han empatado"
+else 
+if (modulo == 0) and String.equivalent?(jugador1,"Pares") do
+  IO.puts("Gana Jugador uno con #{jugador1} ")
+else
+  IO.puts("Gana Jugador dos con #{jugador2} ")
+end
+end
