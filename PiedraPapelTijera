@@ -1,7 +1,7 @@
 IO.puts("Juego de Piedra, Papel y Tijeras!!")
 
 #Jugador uno, selecciona su valor para jugar
-jugador1 = String.trim(IO.gets("Eres el Jugador uno. Ingresa Piedra, Papel o Tijera ... "))
+jugador1 = String.trim(IO.gets("Eres el Jugador uno. Selecciona entre Piedra, Papel o Tijera ... "))
 
 #Jugador dos, selecciona su valor para jugar
 IO.puts("Jugador dos escogiendo su resultado... ")
