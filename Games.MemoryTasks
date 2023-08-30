@@ -1,0 +1,109 @@
+defmodule Games.MemoryTasks do
+
+  import Games.MemoryUtils
+
+  defp selected_letters(map_alphabet)  do
+   vowels = get_vowels(map_alphabet, [])
+   consonants = get_consonants(map_alphabet, [])
+   Enum.concat(vowels, consonants) |> Enum.shuffle()
+  end
+
+  def load_game do
+    sel_letters = selected_letters(alphabet_map())
+    solution = load_board(sel_letters)
+    {board(), solution}
+    #init_game(board(), solution, 4)
+  end
+
+  def init_game(init_board, solved_board , lifes) do
+    IO.puts(init_board)
+    player = IO.gets("Input your nickname: ") |> String.trim
+    ing_pair = IO.gets("Select a pair (x,y): ") |> String.trim
+    #To-do
+    IO.inspect(solved_board)
+    #game(ing_pair, init_board, lifes, solved_board, 0, player)
+
+  end
+
+  def game( init_board, oport, board_sol, points, player) when oport > 0 and points < 75 do
+    pair = IO.gets("Select a pair (x,y): ") |> String.trim
+    split_pair = pair |> String.split(",") |> Enum.map(&String.to_integer/1)
+    pos1 =  hd split_pair
+    pos2 = hd tl split_pair
+    if pos1 > 12 ||  pos2 > 12 || pos1 == pos2  ||  !String.contains?(init_board, "[ #{pos1} ]") ||  !String.contains?(init_board, "[ #{pos2} ]") do
+      IO.puts("The value must be between 1 y 12, \n should not be the same \n Or it has to be on the board")
+      {init_board, oport,  board_sol, points, player}
+    else
+      {letter1, p1} =  List.keyfind(board_sol,pos1,1)
+      {letter2, p2} =  List.keyfind(board_sol,pos2,1)
+      IO.puts("Letter 1: #{letter1}")
+      IO.puts("Letter 2: #{letter2}")
+      if String.contains?(String.upcase(letter1), String.upcase(letter2)) do
+        vowels_list = "AEIOU"
+        if String.contains?(vowels_list, String.upcase(letter2)) do
+          points = points + 15
+          init_board = update_board(pos1, letter1, init_board)
+          init_board = update_board(pos2, letter2, init_board)
+          IO.puts(init_board)
+          IO.puts("player: #{player}")
+          IO.puts("points: #{points}")
+          IO.puts("lifes: #{oport}")
+          if points < 75 do
+            {init_board, oport,  board_sol, points, player}
+          else
+            {init_board, oport,  board_sol, points, player}
+          end
+        else
+          points = points + 10
+          init_board = update_board(pos1, letter1, init_board)
+          init_board = update_board(pos2, letter2, init_board)
+          IO.puts(init_board)
+          IO.puts("player: #{player}")
+          IO.puts("points: #{points}")
+          IO.puts("lifes: #{oport}")
+          if points < 75 do
+            {init_board, oport,  board_sol, points, player}
+          else
+            {init_board, oport,  board_sol, points, player}
+          end
+        end
+
+      else
+        oport = oport - 1
+        IO.puts(init_board)
+        IO.puts("sigue intentando")
+        IO.puts("player: #{player}")
+        IO.puts("points: #{points}")
+        IO.puts("lifes: #{oport}")
+        if oport > 0 do
+          {init_board, oport,  board_sol, points, player}
+        else
+          {init_board, oport,  board_sol, points, player}
+        end
+      end
+    end
+  end
+
+  def game(_,  oport, _, points, player) when oport == 0 do
+    IO.puts("Player:  #{player}")
+    IO.puts("Points: #{points}")
+    IO.puts("Game Over")
+    {%{}, oport, %{},points, player}
+  end
+
+def game(_, oport, board_sol, points, player) when points == 75 do
+    IO.puts("Player:  #{player}")
+    IO.puts("Points: #{points}")
+    IO.puts("Win")
+    {%{}, oport, %{},points, player}
+  end
+
+  def update_board(position,  letter,  board)  do
+    replace_board = "[ #{position} ]"
+    new_letter = "[ #{letter} ]"
+    #to_string(position)
+    String.replace(board, replace_board, new_letter)
+  end
+end
+
+Games.MemoryTasks.load_game
