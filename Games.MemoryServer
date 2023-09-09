@@ -1,0 +1,112 @@
+defmodule Games.MemoryServer do
+
+import Games.MemoryTasks
+use GenServer
+
+#GenServer stuff
+	def init(_param) do
+		#def init(status) do
+		IO.puts("Memory Game is starting...")
+		#To do: Start the main status when process is launch
+		{:ok, "Hola"}
+	end
+
+
+ #Decide what handle are going to use: handle_cast, handle_call, or handle_info
+  #Main functions
+	def init_players() do
+		IO.puts("Let's start - Two player memory game")
+		p1 = IO.gets("Player 1: ") |> String.trim
+		p2 = IO.gets("Player 2: ") |> String.trim
+		%{player1: %{name: p1, points: 0, lifes: 4},
+					player2: %{name: p2, points: 0, lifes: 4},
+					round: 1, turn: 1}
+
+	end
+
+	def start_server  do
+		#GenServer.start_link(S3.Genserver.Memory.MemoryServer , [])
+		GenServer.start_link(__MODULE__ , [], name: MemoryServer)
+		#{p1, p2} = init_players()
+		{board, sol} = Games.MemoryTasks.load_game
+		IO.inspect(sol)
+		players = init_players()
+		next_turn(board, sol,  players)
+		#next_turn(board, sol,  players)
+	end
+
+	def handle_call({:p1, init_board,  board_sol, play}, _from, state) do
+		{board, cont,  sol, total_points, playername} = game( init_board,
+                                                          Map.get(Map.get(play, :player1), :lifes),
+                                                          board_sol,
+                                                          Map.get(Map.get(play, :player1), :points),
+                                                          Map.get(Map.get(play, :player1), :name))
+		IO.puts("Round: #{Map.get(play, :round)}")
+		map =  %{player1: %{name: playername, points: total_points, lifes: cont},
+             player2: Map.get(play, :player2),
+             round: Map.get(play, :round),
+             turn: 2,
+             board: board,
+             sol: sol}
+
+		#IO.inspect(map)
+		# next_turn(board, sol, map)
+		{:reply, map, :ok}
+	end
+
+
+	def handle_call({:p2, init_board,  board_sol, play}, _from, state) do
+		#IO.puts("handle_call p2")
+		{board, cont,  sol, total_points, playername} = game( init_board,
+															  Map.get(Map.get(play, :player2), :lifes),
+															  board_sol,
+															  Map.get(Map.get(play, :player2), :points),
+															  Map.get(Map.get(play, :player2), :name))
+		IO.puts("Round: #{Map.get(play, :round)}")
+		IO.puts("***********************************")
+		map =  %{player1: Map.get(play, :player1),
+				 player2: %{name: playername, points: total_points, lifes: cont},
+				 round: Map.get(play, :round) + 1,
+				 turn: 1,
+				 board: board,
+				 sol: sol}
+		:reply,  map, :ok}
+	end
+
+	def next_turn(init_board, board_sol, statusGame) do #For player 1
+		#IO.puts("next_turn")
+		if Map.get(statusGame, :turn) == 1 do
+			IO.puts("juagador 1")
+			IO.puts("Name: #{Map.get(Map.get(statusGame, :player1), :name)}")
+			 oport = GenServer.call(MemoryServer,{:p1,
+										   init_board,
+										   board_sol,
+										   statusGame}, :infinity)
+			#IO.inspect(oport);
+			if(Map.get(Map.get(oport, :player1), :lifes) == 0 || Map.get(Map.get(oport, :player2), :lifes) == 0) do
+			IO.puts("-----JUEGO TERMINO--------")
+			IO.inspect(oport)
+			player = IO.gets("New play: ") |> String.trim
+		end
+			 next_turn(Map.get(oport , :board), Map.get(oport , :sol),  oport)
+		else
+			IO.puts("juagador 2")
+			IO.puts("Name: #{Map.get(Map.get(statusGame, :player2), :name)}")
+			oport = GenServer.call(MemoryServer,{:p2,
+									  init_board,
+									  board_sol,
+									  statusGame}, :infinity)
+			#IO.inspect(oport)
+			if(Map.get(Map.get(oport, :player1), :lifes) == 0 || Map.get(Map.get(oport, :player2), :lifes) == 0) do
+				IO.puts("-----JUEGO TERMINO--------")
+				IO.inspect(oport)
+				player = IO.gets("New play: ") |> String.trim
+			end
+			next_turn(Map.get(oport , :board), Map.get(oport , :sol),  oport)
+		end
+	end
+
+	# def next_turn() do #For player 2
+	# end
+	end
+	#c("lib/Games/memory_server.ex")
